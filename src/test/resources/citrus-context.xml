@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- "http://www.citrusframework.org/schema/spring-integration/config" -->
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:citrus="http://www.citrusframework.org/schema/config"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.citrusframework.org/schema/config http://www.citrusframework.org/schema/config/citrus-config.xsd
+    http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <citrus:schema-repository id="schemaRepository" />
+
+    <!-- <import resource="classpath*:com/touchpeak/citrus/**/*Test.xml" /> -->
+    <!-- <import resource="classpath*:com/touchpeak/citrus/**/*IT.xml" /> -->
+
+    <!-- <context:property-placeholder -->
+    <!--         location="classpath*:**/test/resources/" -->
+    <!--         ignore-unresolvable="true" /> -->
+
+    <!-- scans for annotated classes in the com.company package -->
+    <!-- <context:component-scan base-package="com.touchpeak.citrus,com.spf,citrus"/> -->
+
+    <!-- enables annotation based configuration -->
+    <!-- <context:annotation-config /> -->
+
+<!--    <citrus:client id="httpConfigRestClient" request-url="http://localhost:24366/CONFIG/1.0/"/>-->
+<!--    <citrus:client id="httpsConfigRestClient" request-url="https://localhost:24366/CONFIG/1.0/"/>-->
+
+</beans>

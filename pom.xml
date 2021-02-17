@@ -1,0 +1,685 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.test</groupId>
+  <artifactId>K8sTesting</artifactId>
+  <packaging>jar</packaging>
+  <version>1.0-SNAPSHOT</version>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <surefire.version>2.22.2</surefire.version>
+    <spring.version>5.2.11.RELEASE</spring.version>
+    <spring.boot.version>2.3.8.RELEASE</spring.boot.version>
+    <citrus.version>2.8.0</citrus.version>
+    <jackson.version>2.12.1</jackson.version>
+    <slf4j.version>1.7.30</slf4j.version>
+    <fabric8.docker.version>0.34.1</fabric8.docker.version>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <docker.app.image.name>web-app</docker.app.image.name>
+    <jkube.version>1.1.0</jkube.version>
+  </properties>
+  <name>K8sTesting</name>
+  <url>http://maven.apache.org</url>
+  <dependencies>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.2</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.integration</groupId>
+      <artifactId>spring-integration-core</artifactId>
+      <version>${spring.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot</artifactId>
+      <version>${spring.boot.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <version>${spring.boot.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-autoconfigure</artifactId>
+      <version>${spring.boot.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <version>${spring.boot.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.2.18</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.30</version>
+    </dependency>
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <version>7.3.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>ch.qos.logback</groupId>
+      <artifactId>logback-classic</artifactId>
+      <version>1.2.3</version>
+      <scope>runtime</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-core</artifactId>
+      <version>${citrus.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-java-dsl</artifactId>
+      <version>${citrus.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-http</artifactId>
+      <version>${citrus.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-docker</artifactId>
+      <version>${citrus.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.consol.citrus</groupId>
+      <artifactId>citrus-kubernetes</artifactId>
+      <version>${citrus.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+      <version>${jackson.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-annotations</artifactId>
+      <version>${jackson.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+      <version>${jackson.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.hamcrest</groupId>
+      <artifactId>hamcrest</artifactId>
+      <version>2.2</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.7.0</version>
+        <configuration>
+          <encoding>${project.build.sourceEncoding}</encoding>
+          <source>1.8</source>
+          <target>1.8</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.0.2</version>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+              <mainClass>org.test.App</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <!-- <plugin> -->
+      <!--   <groupId>org.springframework.boot</groupId> -->
+      <!--   <artifactId>spring-boot-maven-plugin</artifactId> -->
+      <!--   <version>${spring.boot.version}</version> -->
+      <!-- </plugin> -->
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${surefire.version}</version>
+        <configuration>
+          <failIfNoTests>false</failIfNoTests>
+          <workingDirectory>${project.build.directory}</workingDirectory>
+          <excludes>
+            <exclude>**/**IT.java</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <!-- no failsafe plugin here, unless args can be inheritted -->
+    </plugins>
+  </build>
+  <!-- FIXME: "integration-test" does not invoke post-integration-test for some reason
+       but "verify" do
+  -->
+  <profiles>
+    <profile>
+      <id>app-docker</id>
+      <activation>
+        <property>
+          <name>docker</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <!-- <plugin> -->
+          <!--   <groupId>org.codehaus.mojo</groupId> -->
+          <!--   <artifactId>build-helper-maven-plugin</artifactId> -->
+          <!--   <version>3.2.0</version> -->
+          <!--   <executions> -->
+          <!--     <execution> -->
+          <!--       <id>reserve-tomcat-port</id> -->
+          <!--       <goals> -->
+          <!--         <goal>reserve-network-port</goal> -->
+          <!--       </goals> -->
+          <!--       <phase>process-resources</phase> -->
+          <!--       <configuration> -->
+          <!--         <portNames> -->
+          <!--           <portName>tomcat.http.port</portName> -->
+          <!--         </portNames> -->
+          <!--       </configuration> -->
+          <!--     </execution> -->
+          <!--   </executions> -->
+          <!-- </plugin> -->
+          <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>${surefire.version}</version>
+            <configuration>
+              <!-- <failIfNoTests>false</failIfNoTests> -->
+              <!-- <workingDirectory>${project.build.directory}</workingDirectory> -->
+              <excludes>
+                <exclude>**/**KubernetesIT.java</exclude>
+              </excludes>
+              <includes>
+                <include>**/**DockerIT.java</include>
+                <include>**/**IT.java</include>
+              </includes>
+              <!-- <excludes> -->
+              <!--   <exclude>**/**IT.java</exclude> -->
+              <!-- </excludes> -->
+              <systemPropertyVariables>
+                <citrus.application.properties>classpath:citrus-application-docker.properties</citrus.application.properties>
+                <test.server.port>8080</test.server.port>
+                <test.server.hostname>localhost</test.server.hostname>
+                <docker.app.image.name>${docker.app.image.name}</docker.app.image.name>
+              </systemPropertyVariables>
+            </configuration>
+            <executions>
+              <execution>
+                <id>integration-tests</id>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>io.fabric8</groupId>
+            <artifactId>docker-maven-plugin</artifactId>
+            <version>${fabric8.docker.version}</version>
+            <executions>
+              <execution>
+                <id>start</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>build</goal>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>stop</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <logDate>default</logDate>
+              <verbose>true</verbose>
+              <autoCreateCustomNetworks>true</autoCreateCustomNetworks>
+              <watchInterval>1000</watchInterval>
+              <containerNamePatten>%a</containerNamePatten>
+              <images>
+                <image>
+                  <alias>pgsql</alias>
+                  <name>postgres:13</name>
+                  <watch>
+                    <mode>none</mode>
+                  </watch>
+                  <run>
+                    <env>
+                      <POSTGRES_DB>postgres</POSTGRES_DB>
+                      <POSTGRES_USER>postgres</POSTGRES_USER>
+                      <POSTGRES_PASSWORD>postgres</POSTGRES_PASSWORD>
+                      <POSTGRES_HOST_AUTH_METHOD>trust</POSTGRES_HOST_AUTH_METHOD>
+                    </env>
+                    <wait>
+                      <tcp>
+                        <ports>5432</ports>
+                      </tcp>
+                      <time>6000</time>
+                      <shutdown>500</shutdown>
+                    </wait>
+                  </run>
+                </image>
+                <image>
+                  <alias>${docker.app.image.name}</alias>
+                  <name>local/${docker.app.image.name}:${project.version}</name>
+                  <build>
+                    <from>fabric8/java-alpine-openjdk8-jdk</from>
+                    <assembly>
+                      <descriptorRef>artifact-with-dependencies</descriptorRef>
+                      <targetDir>/deployments</targetDir>
+                    </assembly>
+                    <cleanup>remove</cleanup>
+                  </build>
+                  <watch>
+                    <mode>none</mode>
+                  </watch>
+                  <run>
+                    <env>
+                      <JAVA_OPTIONS>-Dserver.port=8080 -Dtest.pgsql.hostname=pgsql</JAVA_OPTIONS>
+                      <JAVA_APP_JAR>${project.name}-${project.version}.jar</JAVA_APP_JAR>
+                    </env>
+                    <ports>
+                      <port>8080:8080</port>
+                    </ports>
+                    <wait>
+                      <http>
+                        <url>http://localhost:8080/status</url>
+                        <method>GET</method>
+                        <status>200</status>
+                      </http>
+                      <!-- <tcp> -->
+                      <!--   <ports>8080</ports> -->
+                      <!-- </tcp> -->
+                      <time>6000</time>
+                      <shutdown>500</shutdown>
+                    </wait>
+                    <!-- links makes the services available to other containers -->
+                    <links>
+                      <link>pgsql</link>
+                    </links>
+                    <dependsOn>
+                      <dependsOn>pgsql</dependsOn>
+                    </dependsOn>
+                    <log>
+                      <enabled>true</enabled>
+                      <color>green</color>
+                    </log>
+                  </run>
+                </image>
+                <image>
+                  <alias>${docker.app.image.name}-tests</alias>
+                  <name>local/${docker.app.image.name}-tests:${project.version}</name>
+                  <build>
+                    <from>maven:3.6-jdk-8</from>
+                    <assembly>
+                      <descriptorRef>project</descriptorRef>
+                    </assembly>
+                    <cleanup>remove</cleanup>
+                  </build>
+                  <run>
+                    <volumes>
+                      <bind>
+                        <volume>/var/run/docker.sock:/run/docker.sock</volume>
+                        <volume>${settings.localRepository}:/root/.m2/repository</volume>
+                      </bind>
+                    </volumes>
+                    <workingDir>/maven</workingDir>
+                    <cmd>mvn install</cmd>
+                    <links>
+                      <link>${docker.app.image.name}</link>
+                    </links>
+                    <dependsOn>
+                      <dependsOn>${docker.app.image.name}</dependsOn>
+                    </dependsOn>
+                    <wait>
+                      <log>BUILD SUCCESS</log>
+                      <time>60000</time>
+                      <shutdown>500</shutdown>
+                    </wait>
+                    <log>
+                      <enabled>true</enabled>
+                      <color>cyan</color>
+                    </log>
+                  </run>
+                </image>
+              </images>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>app-kubernetes</id>
+      <activation>
+        <property>
+          <name>kubernetes</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>${surefire.version}</version>
+            <configuration>
+              <!-- <failIfNoTests>false</failIfNoTests> -->
+              <!-- <workingDirectory>${project.build.directory}</workingDirectory> -->
+              <!-- <includes> -->
+              <!--   <include>**/**KubernetesIT.java</include> -->
+              <!--   <include>**/**IT.java</include> -->
+              <!-- </includes> -->
+              <!-- <excludes> -->
+              <!--   <exclude>**/**DockerIT.java</exclude> -->
+              <!-- </excludes> -->
+              <excludes>
+                <exclude>**/**IT.java</exclude>
+              </excludes>
+              <systemPropertyVariables>
+                <citrus.application.properties>classpath:citrus-application-kubernetes.properties</citrus.application.properties>
+                <test.server.port>8080</test.server.port>
+                <test.server.hostname>localhost</test.server.hostname>
+              </systemPropertyVariables>
+            </configuration>
+            <executions>
+              <execution>
+                <id>integration-tests</id>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <!-- <plugin> -->
+          <!--   <groupId>org.springframework.boot</groupId> -->
+          <!--   <artifactId>spring-boot-maven-plugin</artifactId> -->
+          <!--   <version>${spring.boot.version}</version> -->
+          <!--   <configuration> -->
+          <!--     <mainClass>org.test.App</mainClass> -->
+          <!--     <useTestClasspath>false</useTestClasspath> -->
+          <!--     <arguments> -->
+          <!--       <argument>-\-server.port=${tomcat.http.port}</argument> -->
+          <!--     </arguments> -->
+          <!--     <jvmArguments>-Dtest.pgsql.hostname=localhost</jvmArguments> -->
+          <!--   </configuration> -->
+          <!-- </plugin> -->
+          <plugin>
+            <groupId>org.eclipse.jkube</groupId>
+            <artifactId>kubernetes-maven-plugin</artifactId>
+            <version>${jkube.version}</version>
+            <executions>
+              <execution>
+                <id>pre-integration-test</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>resource</goal>
+                  <goal>build</goal>
+                  <!-- <goal>apply</goal> -->
+                  <goal>deploy</goal>
+                </goals>
+              </execution>
+              <!-- <execution> -->
+              <!--   <id>post-integration-test</id> -->
+              <!--   <phase>post-integration-test</phase> -->
+              <!--   <goals> -->
+              <!--     <goal>undeploy</goal> -->
+              <!--   </goals> -->
+              <!-- </execution> -->
+            </executions>
+            <configuration>
+              <imagePullPolicy>Never</imagePullPolicy>
+              <namespace>testing-ns</namespace>
+              <images>
+                <!-- <image> -->
+                <!--   <alias>pgsql</alias> -->
+                <!--   <name>postgres:13</name> -->
+                <!--   <watch> -->
+                <!--     <mode>none</mode> -->
+                <!--   </watch> -->
+                <!--   <run> -->
+                <!--     <env> -->
+                <!--       <POSTGRES_DB>postgres</POSTGRES_DB> -->
+                <!--       <POSTGRES_USER>postgres</POSTGRES_USER> -->
+                <!--       <POSTGRES_PASSWORD>postgres</POSTGRES_PASSWORD> -->
+                <!--       <POSTGRES_HOST_AUTH_METHOD>trust</POSTGRES_HOST_AUTH_METHOD> -->
+                <!--     </env> -->
+                <!--     <wait> -->
+                <!--       <tcp> -->
+                <!--         <ports>5432</ports> -->
+                <!--       </tcp> -->
+                <!--       <time>6000</time> -->
+                <!--       <shutdown>500</shutdown> -->
+                <!--     </wait> -->
+                <!--   </run> -->
+                <!-- </image> -->
+                <image>
+                  <!-- <alias>${docker.app.image.name}</alias> -->
+                  <name>local/my-image</name>
+                  <alias>local-my-image</alias>
+                  <!-- <name>web-app</name> -->
+                  <!-- <build> -->
+                  <!--   <from>openjdk:latest</from> -->
+                  <!--   <cmd>java -Dserver.port=8080 -jar maven/${project.artifactId}-${project.version}.jar</cmd> -->
+                  <!-- </build> -->
+                  <watch>
+                    <mode>none</mode>
+                  </watch>
+                  <run>
+                    <!-- <namingStrategy>alias</namingStrategy> -->
+                    <!-- <ports> -->
+                    <!--   <port>localhost:8080</port> -->
+                    <!-- </ports> -->
+                    <wait>
+                      <http>
+                        <url>http://localhost:8080/status</url>
+                        <method>GET</method>
+                        <status>200</status>
+                      </http>
+                      <time>6000</time>
+                      <shutdown>500</shutdown>
+                    </wait>
+                    <log>
+                      <enabled>true</enabled>
+                      <color>green</color>
+                    </log>
+                  </run>
+                  <!-- <name>helloworld-java:${project.version}</name> -->
+                  <!-- <alias>hello-world</alias> -->
+                  <!-- <build> -->
+                  <!--   <from>openjdk:latest</from> -->
+                  <!--   <cmd>java -jar maven/${project.artifactId}-${project.version}.jar</cmd> -->
+                  <!-- </build> -->
+                  <!-- <run> -->
+                  <!--   <wait> -->
+                  <!--     <log>Hello World!</log> -->
+                  <!--   </wait> -->
+                  <!-- </run> -->
+                </image>
+                <!-- <image> -->
+                <!--   <name>postgresql:13</name> -->
+                <!--   <alias>pgsql</alias> -->
+                <!--   <build> -->
+                <!--     <!-\- needed by plugin. otherwise breaks with nullpointer -\-> -->
+                <!--   </build> -->
+                <!--   <watch> -->
+                <!--     <mode>none</mode> -->
+                <!--   </watch> -->
+                <!--   <run> -->
+                <!--     <env> -->
+                <!--       <POSTGRES_DB>postgres</POSTGRES_DB> -->
+                <!--       <POSTGRES_USER>postgres</POSTGRES_USER> -->
+                <!--       <POSTGRES_PASSWORD>postgres</POSTGRES_PASSWORD> -->
+                <!--       <POSTGRES_HOST_AUTH_METHOD>trust</POSTGRES_HOST_AUTH_METHOD> -->
+                <!--     </env> -->
+                <!--     <wait> -->
+                <!--       <tcp> -->
+                <!--         <ports>5432</ports> -->
+                <!--       </tcp> -->
+                <!--       <time>6000</time> -->
+                <!--       <shutdown>500</shutdown> -->
+                <!--     </wait> -->
+                <!--   </run> -->
+                <!-- </image> -->
+              </images>
+              <!-- <resources> -->
+              <!--   <labels> -->
+              <!--     <all> -->
+              <!--       <testProject>${project.name}</testProject> -->
+              <!--     </all> -->
+              <!--   </labels> -->
+              <!-- </resources> -->
+              <!-- <enricher> -->
+              <!--   <!-\- <excludes> -\-> -->
+              <!--   <!-\-   <exclude>jkube-expose</exclude> -\-> -->
+              <!--   <!-\- </excludes> -\-> -->
+              <!--   <config> -->
+              <!--     <jkube-service> -->
+              <!--       <type>ClusterIP</type> -->
+              <!--       <name>pgsql</name> -->
+              <!--       <port>5432</port> -->
+              <!--     </jkube-service> -->
+              <!--   </config> -->
+              <!-- </enricher> -->
+            </configuration>
+            <!-- <executions> -->
+            <!--   <execution> -->
+            <!--     <goals> -->
+            <!--       <!-\- <goal>resource</goal> -\-> -->
+            <!--       <!-\- <goal>build</goal> -\-> -->
+            <!--       <!-\- <goal>apply</goal> -\-> -->
+            <!--       <goal>deploy</goal> -->
+            <!--       <!-\- <goal>helm</goal> -\-> -->
+            <!--       <!-\- no need to push if image is build using minikube own docker env -\-> -->
+            <!--       <!-\- <goal>push</goal> -\-> -->
+            <!--     </goals> -->
+            <!--   </execution> -->
+            <!-- </executions> -->
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>app-embedded</id>
+      <activation>
+        <property>
+          <name>embedded</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>build-helper-maven-plugin</artifactId>
+            <version>3.2.0</version>
+            <executions>
+              <execution>
+                <id>reserve-tomcat-port</id>
+                <goals>
+                  <goal>reserve-network-port</goal>
+                </goals>
+                <phase>process-resources</phase>
+                <configuration>
+                  <portNames>
+                    <portName>tomcat.http.port</portName>
+                  </portNames>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-failsafe-plugin</artifactId>
+            <version>${surefire.version}</version>
+            <configuration>
+              <failIfNoTests>false</failIfNoTests>
+              <workingDirectory>${project.build.directory}</workingDirectory>
+              <systemPropertyVariables>
+                <test.server.port>${tomcat.http.port}</test.server.port>
+                <test.server.hostname>localhost</test.server.hostname>
+              </systemPropertyVariables>
+              <excludes>
+                <exclude>**/**DockerIT.java</exclude>
+                <exclude>**/**KubernetesIT.java</exclude>
+              </excludes>
+              <includes>
+                <include>**/**IT.java</include>
+              </includes>
+            </configuration>
+            <executions>
+              <execution>
+                <id>integration-tests</id>
+                <goals>
+                  <goal>integration-test</goal>
+                  <goal>verify</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-maven-plugin</artifactId>
+            <version>${spring.boot.version}</version>
+            <configuration>
+              <mainClass>org.test.App</mainClass>
+              <useTestClasspath>false</useTestClasspath>
+              <arguments>
+                <argument>--server.port=${tomcat.http.port}</argument>
+              </arguments>
+              <jvmArguments>-Dtest.pgsql.hostname=localhost</jvmArguments>
+            </configuration>
+            <executions>
+              <execution>
+                <id>pre-integration-test</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>start</goal>
+                </goals>
+              </execution>
+              <execution>
+                <id>post-integration-test</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>stop</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+</project>
